@@ -76,6 +76,8 @@ jobs:
           -DSUPPORT_JXL=OFF \
           -DSUPPORT_TIF=ON \
           -DSUPPORT_WEBP=ON \
+          -DCMAKE_INSTALL_PREFIX=prefix \
+          -DCMAKE_INSTALL_LIBDIR=lib \
           ${{ matrix.platform.cmake }}
     - name: Build
       if: "matrix.platform.cmake"
@@ -85,8 +87,15 @@ jobs:
       run: |
         set -eu
         rm -fr DESTDIR-cmake
-        DESTDIR=$(pwd)/DESTDIR-cmake cmake --install build/ --config Release
-        ( cd DESTDIR-cmake; find ) | LC_ALL=C sort -u
+        cmake --install build/ --config Release
+        find prefix | LC_ALL=C sort -u
+    - name: Test using showimage
+      if: "runner.os == 'Linux' && matrix.platform.cmake"
+      run: |
+        for logo in $(pwd)/testinputs/logo.*; do
+          echo "Showing logo $logo"
+          env -C build/ LD_LIBRARY_PATH=$(pwd)/prefix/lib SDL_VIDEODRIVER=dummy ./showimage -timeout 0 $logo
+        done
 
     - name: Configure Autotools
       if: "! matrix.platform.cmake"
@@ -112,6 +121,13 @@ jobs:
         mkdir DESTDIR-autotools
         make -j"${parallel}" -C build-autotools install DESTDIR="${curdir}/DESTDIR-autotools" V=1
         ( cd DESTDIR-autotools; find ) | LC_ALL=C sort -u
+    - name: Test using showimage
+      if: "runner.os == 'Linux' && ! matrix.platform.cmake"
+      run: |
+          for logo in $(pwd)/testinputs/logo.*; do
+            echo "Showing logo $logo"
+            env -C build-autotools/ SDL_VIDEODRIVER=dummy ./showimage -timeout 0 $logo
+          done
     - name: Distcheck with Autotools
       if: "runner.os == 'Linux' && ! matrix.platform.cmake"
       run: |

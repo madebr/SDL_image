@@ -48,6 +48,21 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
     }
 }
 
+
+/* Type of param argument of time_out_callback */
+struct showimage_timeout_param {
+    int event_type;
+};
+
+/* On timeout, push a custom event to signal the next image should be shown */
+static Uint32 time_out_callback(Uint32 interval, void *param) {
+    struct showimage_timeout_param *timeoutParams = param;
+    SDL_Event event;
+    event.user.type = timeoutParams->event_type;
+    SDL_PushEvent(&event);
+    return(interval);
+}
+
 int main(int argc, char *argv[])
 {
     SDL_Window *window;
@@ -56,12 +71,15 @@ int main(int argc, char *argv[])
     Uint32 flags;
     int i, w, h;
     int done = 0;
+    int error = 0;
     SDL_Event event;
+    SDL_TimerID timer = 0;
+    struct showimage_timeout_param timeout_params;
     const char *saveFile = NULL;
 
     /* Check command line usage */
     if ( ! argv[1] ) {
-        SDL_Log("Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
+        SDL_Log("Usage: %s [-fullscreen] [-timeout INT_MS] [-save file.png] <image_file> ...\n", argv[0]);
         return(1);
     }
 
@@ -83,6 +101,12 @@ int main(int argc, char *argv[])
         return(2);
     }
 
+    timeout_params.event_type = SDL_RegisterEvents(1);
+    if (timeout_params.event_type == -1) {
+        SDL_Log("SDL_RegisterEvents() failed: %s\n", SDL_GetError());
+        return(2);
+    }
+
     for ( i=1; argv[i]; ++i ) {
         if ( SDL_strcmp(argv[i], "-fullscreen") == 0 ) {
             continue;
@@ -90,6 +114,21 @@ int main(int argc, char *argv[])
 
         if ( SDL_strcmp(argv[i], "-quit") == 0 ) {
             break;
+        }
+
+        if ( SDL_strcmp(argv[i], "-timeout") == 0 ) {
+            ++i;
+            if (timer != 0) {
+                SDL_RemoveTimer(timer);
+            }
+            if (atoi(argv[i]) >= 0) {
+                timer = SDL_AddTimer(atoi(argv[i]), time_out_callback, &timeout_params);
+                if (timer == 0) {
+                    SDL_Log("SDL_AddTimer() failed: %s\n", SDL_GetError());
+                    return (2);
+                }
+            }
+            continue;
         }
 
         if ( SDL_strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
@@ -102,6 +141,7 @@ int main(int argc, char *argv[])
         texture = IMG_LoadTexture(renderer, argv[i]);
         if (!texture) {
             SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
+            error = 1;
             continue;
         }
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
@@ -121,9 +161,11 @@ int main(int argc, char *argv[])
                 }
                 if ( result < 0 ) {
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
+                    error = 1;
                 }
             } else {
                 SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
+                error = 1;
             }
         }
 
@@ -135,6 +177,9 @@ int main(int argc, char *argv[])
         done = 0;
         while ( !done ) {
             while ( SDL_PollEvent(&event) ) {
+                if (event.type == timeout_params.event_type) {
+                    done = 1;
+                }
                 switch (event.type) {
                     case SDL_KEYUP:
                         switch (event.key.keysym.sym) {
@@ -190,5 +235,5 @@ int main(int argc, char *argv[])
 
     /* We're done! */
     SDL_Quit();
-    return(0);
+    return(error);
 }
