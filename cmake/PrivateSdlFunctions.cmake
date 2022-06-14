@@ -1,4 +1,4 @@
-# This file is shared amongst SDL_image/SDL_mixer/SDL_ttf
+# This file is shared amongst SDL_image/SDL_mixer/SDL_net/SDL_ttf
 
 macro(sdl_calculate_derived_version_variables)
     if (NOT DEFINED MAJOR_VERSION OR NOT DEFINED MINOR_VERSION OR NOT DEFINED MICRO_VERSION)

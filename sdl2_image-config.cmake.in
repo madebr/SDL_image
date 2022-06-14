@@ -8,6 +8,8 @@ set_package_properties(SDL2_image PROPERTIES
 
 set(SDL2_image_FOUND TRUE)
 
+set(SDL2IMAGE_VENDORED  FALSE)
+
 set(SDL2IMAGE_AVIF  @LOAD_AVIF@)
 set(SDL2IMAGE_BMP   @LOAD_BMP@)
 set(SDL2IMAGE_GIF   @LOAD_GIF@)
@@ -29,8 +31,6 @@ set(SDL2IMAGE_WEBP  @LOAD_WEBP@)
 set(SDL2IMAGE_JPG_SAVE @SDL2IMAGE_JPG_SAVE@)
 set(SDL2IMAGE_PNG_SAVE @SDL2IMAGE_PNG_SAVE@)
 
-set(SDL2IMAGE_VENDORED  FALSE)
-
 set(SDL2IMAGE_BACKEND_IMAGEIO   @USE_IMAGEIO@)
 set(SDL2IMAGE_BACKEND_STB       @USE_STBIMAGE@)
 set(SDL2IMAGE_BACKEND_WIC       @USE_WIC@)
@@ -48,7 +48,7 @@ set(_sdl2image_libdir   "${libdir}")
 set(_sdl2image_incdir   "${includedir}/SDL2")
 
 # Convert _sdl2image_extra_static_libraries to list and keep only libraries
-string(REGEX MATCHALL "(-[lm]([a-zA-Z0-9._]+))|(-Wl,[^ ]*framework[^ ]*)" _sdl2image_extra_static_libraries "${_sdl2image_extra_static_libraries}")
+string(REGEX MATCHALL "(-[lm]([-a-zA-Z0-9._]+))|(-Wl,[^ ]*framework[^ ]*)" _sdl2image_extra_static_libraries "${_sdl2image_extra_static_libraries}")
 string(REGEX REPLACE "^-l" "" _sdl2image_extra_static_libraries "${_sdl2image_extra_static_libraries}")
 string(REGEX REPLACE ";-l" ";" _sdl2image_extra_static_libraries "${_sdl2image_extra_static_libraries}")
 

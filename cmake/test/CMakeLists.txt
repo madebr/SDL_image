@@ -5,7 +5,7 @@ project(sdl_test LANGUAGES C)
 
 cmake_policy(SET CMP0074 NEW)
 
-# Override CMAKE_FIND_ROOT_PATH_MODE to allow search for SDL2 outside of sysroot
+# Override CMAKE_FIND_ROOT_PATH_MODE to allow search for SDL2_image outside of sysroot
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE NEVER)
 
 include(FeatureSummary)

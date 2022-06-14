@@ -12,6 +12,8 @@ set_package_properties(SDL2_image PROPERTIES
 
 set(SDL2_image_FOUND TRUE)
 
+set(SDL2IMAGE_VENDORED  FALSE)
+
 set(SDL2IMAGE_AVIF  FALSE)
 set(SDL2IMAGE_BMP   TRUE)
 set(SDL2IMAGE_GIF   TRUE)
@@ -33,8 +35,6 @@ set(SDL2IMAGE_WEBP  FALSE)
 set(SDL2IMAGE_JPG_SAVE FALSE)
 set(SDL2IMAGE_PNG_SAVE FALSE)
 
-set(SDL2IMAGE_VENDORED  FALSE)
-
 set(SDL2IMAGE_BACKEND_IMAGEIO   FALSE)
 set(SDL2IMAGE_BACKEND_STB       TRUE)
 set(SDL2IMAGE_BACKEND_WIC       FALSE)
@@ -49,9 +49,9 @@ if(NOT TARGET SDL2_image::SDL2_image)
     add_library(SDL2_image::SDL2_image INTERFACE IMPORTED)
     set_target_properties(SDL2_image::SDL2_image
         PROPERTIES
-            INTERFACE_COMPILE_OPTIONS "-F;${_sdl2image_framework_parent_path}"
+            INTERFACE_COMPILE_OPTIONS "SHELL:-F \"${_sdl2image_framework_parent_path}\""
             INTERFACE_INCLUDE_DIRECTORIES "${_sdl2image_framework_path}/Headers"
-            INTERFACE_LINK_OPTIONS "-F;${_sdl2image_framework_parent_path};-framework;SDL2_image"
+            INTERFACE_LINK_OPTIONS "SHELL:-F \"${_sdl2image_framework_parent_path}\";SHELL:-framework SDL2_image"
             COMPATIBLE_INTERFACE_BOOL "SDL2_SHARED"
             INTERFACE_SDL2_SHARED "ON"
     )
