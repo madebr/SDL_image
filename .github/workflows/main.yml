@@ -62,6 +62,12 @@ jobs:
         sdl-test: true
         shell: ${{ matrix.platform.shell }}
         add-to-environment: true
+    - shell: sh
+      run: |
+        echo "sdl2-config"
+        cat $SDL2_CONFIG
+        echo "sdl2.pc"
+        cat $PKG_CONFIG_PATH/sdl2.pc
     - name: Setup Macos dependencies
       if: ${{ runner.os == 'macOS' }}
       run: |
