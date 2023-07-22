@@ -45,7 +45,7 @@ jobs:
           ${{ matrix.platform.msys-env }}-ninja
           ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
-    - name: Setup Ninja
+    - name: Set up Ninja
       if: ${{ !contains(matrix.platform.shell, 'msys2') }}
       uses: ashutoshvarma/setup-ninja@master
       with:
@@ -54,11 +54,12 @@ jobs:
       id: sdl
       uses: libsdl-org/setup-sdl@main
       with:
+        add-to-environment: true
         cmake-generator: Ninja
         version: 3-head
         sdl-test: true
         shell: ${{ matrix.platform.shell }}
-    - name: Setup Macos dependencies
+    - name: Set up Macos dependencies
       if: ${{ runner.os == 'macOS' }}
       run: |
         brew install \
@@ -127,13 +128,19 @@ jobs:
 
         cmake -B build \
           "$@" \
+          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$PWD/build \
           ${{ matrix.platform.cmake }}
     - name: Build (CMake)
       run: cmake --build build/ --config Release --parallel --verbose
     - name: Run build-time tests
-      if: ${{ runner.os != 'Windows' }}
       run: |
         set -eu
+
+        # msys2 resets PATH, so manually add bin path of libsdl-org/setup-sdl action to PATH
+        if [ "${{ matrix.platform.msystem }}" != "" ]; then
+          export PATH="$(cygpath "${{ steps.sdl.outputs.prefix }}/bin" ):$PATH"
+          echo "PATH=$PATH"
+        fi
 
         # Expect to support all formats except AVIF in these builds
         export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
@@ -158,7 +165,7 @@ jobs:
         export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1
         export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=1
 
-        ctest -VV --test-dir build/test
+        ctest -VV --test-dir build
     - name: Install (CMake)
       if: ${{ matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2') }}
       run: |

@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+# Allow set()'ed CMake variables to override option() cached CMake variables
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 # See docs/release_checklist.md
 set(MAJOR_VERSION 3)
 set(MINOR_VERSION 0)
