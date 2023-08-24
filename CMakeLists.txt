@@ -184,6 +184,10 @@ endif()
 # Set PROJECT_VERSION of subprojects to "" if it's project call does not set VERSION
 cmake_policy(SET CMP0048 NEW)
 
+# option() honors normal variables.
+cmake_policy(SET CMP0077 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
 # Allow cmake_dependent_option to use "Full Condition Syntax"
 if(POLICY CMP0127)
     cmake_policy(SET CMP0127 NEW)
@@ -336,9 +340,9 @@ if(SDL3IMAGE_ZLIB)
         sdl_check_project_in_subfolder(external/zlib zlib SDL3IMAGE_VENDORED)
         add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
         # PNG_BUILD_ZLIB variable is used by vendored libpng
-        set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
+        set(PNG_BUILD_ZLIB ON)
         # ZLIB_INCLUDE_DIR variable is used by vendored libpng
-        set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib" CACHE STRING "path of zlib, passed to libpng" FORCE)
+        set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib")
         # ZLIB_LIBRARY variable is used by vendored libpng
         if(SDL3IMAGE_ZLIB_SHARED)
             set(ZLIB_LIBRARY zlib)
@@ -518,7 +522,7 @@ if(SDL3IMAGE_PNG)
         SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>
     )
     if(NOT SDL3IMAGE_BACKEND_STB AND NOT SDL3IMAGE_BACKEND_WIC AND NOT SDL3IMAGE_BACKEND_IMAGEIO)
-        set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
+        set(HAVE_LD_VERSION_SCRIPT OFF)
         if(SDL3IMAGE_PNG_VENDORED)
             message(STATUS "${PROJECT_NAME}: Using vendored libpng")
             sdl_check_project_in_subfolder(external/libpng libpng SDL3IMAGE_VENDORED)
@@ -587,23 +591,23 @@ if(SDL3IMAGE_TIF)
     if(SDL3IMAGE_TIF_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored libtiff")
         # tiff-tests variable is used by vendored libtiff
-        set(tiff-tests OFF CACHE BOOL "libtiff: tests" FORCE)
+        set(tiff-tests OFF)
         # jpeg variable is used by vendored libtiff
-        set(jpeg OFF CACHE BOOL "libtiff: jpeg option" FORCE)
+        set(jpeg OFF)
         # libdeflate variable is used by vendored libtiff
-        set(libdeflate OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
+        set(libdeflate OFF)
         # DEFLATE_FOUND variable is used by vendored libtiff
-        set(DEFLATE_FOUND OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
+        set(DEFLATE_FOUND OFF)
         # zlib variable is used by vendored libtiff (controls use of `find_package`)
-        set(zlib OFF CACHE BOOL "libtiff: find zlib using find_package" FORCE)
+        set(zlib OFF)
         # ZLIB_FOUND is used by vendored libtiff
         set(ZLIB_FOUND "")
         # lzma variable is used by vendored libtiff
-        set(lzma OFF CACHE BOOL "libtiff: lzma option" FORCE)
+        set(lzma OFF)
         # webp variable is used by vendored libtiff
-        set(webp OFF CACHE BOOL "libtiff: webp option" FORCE)
+        set(webp OFF)
         # zstd variable is used by vendored libtiff
-        set(zstd OFF CACHE BOOL "libtiff: zstd option" FORCE)
+        set(zstd OFF)
         # ZSTD_FOUND variable is used by vendored libtiff
         set(ZSTD_FOUND OFF)
         # WEBP_LIBRARY variable is used by vendored libtiff
