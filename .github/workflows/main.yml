@@ -199,6 +199,9 @@ jobs:
         rm -fr build
         mkdir build
         ./autogen.sh
+        if [ "x${{ runner.os }}" = "xmacOS" ]; then
+          export LDFLAGS=-Wl,-rpath,${{ steps.sdl.outputs.prefix }}/lib
+        fi
         # We do the CMake build with stb_image and the Autotools build without
         set -- --disable-stb-image --prefix=$(pwd)/prefix_autotools --enable-tests --enable-installed-tests
         ( cd build && ../configure "$@" )
