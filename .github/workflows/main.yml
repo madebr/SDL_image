@@ -125,6 +125,9 @@ jobs:
         sdl_binpath="${{ steps.sdl.outputs.prefix }}/bin"
         if [ "x${{ runner.os }}" = "xWindows" ]; then
           sdl_binpath="$( cygpath -u "$sdl_binpath" )"
+        elif [ "x${{ runner.os }}" = "xmacOS" ]; then
+          export DYLD_LIBRARY_PATH="$( brew --prefix )/lib:$DYLD_LIBRARY_PATH"
+          echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH"
         fi
         echo "sdl_binpath=$sdl_binpath"
         export PATH="$sdl_binpath:$PATH"
