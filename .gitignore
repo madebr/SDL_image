@@ -26,3 +26,6 @@ Release
 *.suo
 *.sdf
 *.opensdf
+deps
+dist
+build-mingw
