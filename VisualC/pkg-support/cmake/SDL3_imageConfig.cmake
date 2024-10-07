@@ -7,11 +7,22 @@ set_package_properties(SDL3_image PROPERTIES
     DESCRIPTION "SDL_image is an image file loading library"
 )
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.0...3.5)
+
+# Copied from `configure_package_config_file`
+macro(check_required_components _NAME)
+    foreach(comp ${${_NAME}_FIND_COMPONENTS})
+        if(NOT ${_NAME}_${comp}_FOUND)
+            if(${_NAME}_FIND_REQUIRED_${comp})
+                set(${_NAME}_FOUND FALSE)
+            endif()
+        endif()
+    endforeach()
+endmacro()
 
 set(SDL3_image_FOUND TRUE)
 
-set(SDLIMAGE_AVIF  FALSE)
+set(SDLIMAGE_AVIF  TRUE)
 set(SDLIMAGE_BMP   TRUE)
 set(SDLIMAGE_GIF   TRUE)
 set(SDLIMAGE_JPG   TRUE)
@@ -23,11 +34,11 @@ set(SDLIMAGE_PNM   TRUE)
 set(SDLIMAGE_QOI   TRUE)
 set(SDLIMAGE_SVG   TRUE)
 set(SDLIMAGE_TGA   TRUE)
-set(SDLIMAGE_TIF   FALSE)
+set(SDLIMAGE_TIF   TRUE)
 set(SDLIMAGE_XCF   FALSE)
 set(SDLIMAGE_XPM   TRUE)
 set(SDLIMAGE_XV    TRUE)
-set(SDLIMAGE_WEBP  FALSE)
+set(SDLIMAGE_WEBP  TRUE)
 
 set(SDLIMAGE_JPG_SAVE FALSE)
 set(SDLIMAGE_PNG_SAVE FALSE)
@@ -38,12 +49,16 @@ set(SDLIMAGE_BACKEND_IMAGEIO   FALSE)
 set(SDLIMAGE_BACKEND_STB       TRUE)
 set(SDLIMAGE_BACKEND_WIC       FALSE)
 
-if(CMAKE_SIZEOF_VOID_P STREQUAL "4")
+if(SDL_CPU_X86)
     set(_sdl_arch_subdir "x86")
-elseif(CMAKE_SIZEOF_VOID_P STREQUAL "8")
+elseif(SDL_CPU_X64 OR SDL_CPU_ARM64EC)
     set(_sdl_arch_subdir "x64")
+elseif(SDL_CPU_ARM64)
+    set(SDLIMAGE_AVIF  FALSE)
+    set(SDLIMAGE_TIF   FALSE)
+    set(SDLIMAGE_WEBP  FALSE)
+    set(_sdl_arch_subdir "arm64")
 else()
-    unset(_sdl_arch_subdir)
     set(SDL3_image_FOUND FALSE)
     return()
 endif()
@@ -55,9 +70,10 @@ set(_sdl3image_dll          "${CMAKE_CURRENT_LIST_DIR}/../lib/${_sdl_arch_subdir
 # All targets are created, even when some might not be requested though COMPONENTS.
 # This is done for compatibility with CMake generated SDL3_image-target.cmake files.
 
-if(NOT TARGET SDL3_image::SDL3_image)
-    add_library(SDL3_image::SDL3_image SHARED IMPORTED)
-    set_target_properties(SDL3_image::SDL3_image
+set(SDL3_image_SDL3_image-shared_FOUND TRUE)
+if(NOT TARGET SDL3_image::SDL3_image-shared)
+    add_library(SDL3_image::SDL3_image-shared SHARED IMPORTED)
+    set_target_properties(SDL3_image::SDL3_image-shared
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${_sdl3image_incdir}"
             IMPORTED_IMPLIB "${_sdl3image_library}"
@@ -71,3 +87,29 @@ unset(_sdl_arch_subdir)
 unset(_sdl3image_incdir)
 unset(_sdl3image_library)
 unset(_sdl3image_dll)
+
+set(SDL3_image_SDL3_image-static_FOUND TRUE)
+
+set(SDL3_image_SDL3_image_FOUND FALSE)
+if(SDL3_image_SDL3_image-hared_FOUND OR SDL3_image_SDL3_image-static_FOUND)
+    set(SDL3_image_SDL3_image_FOUND TRUE)
+endif()
+
+function(_sdl_create_target_alias_compat NEW_TARGET TARGET)
+    if(CMAKE_VERSION VERSION_LESS "3.18")
+        # Aliasing local targets is not supported on CMake < 3.18, so make it global.
+        add_library(${NEW_TARGET} INTERFACE IMPORTED)
+        set_target_properties(${NEW_TARGET} PROPERTIES INTERFACE_LINK_LIBRARIES "${TARGET}")
+    else()
+        add_library(${NEW_TARGET} ALIAS ${TARGET})
+    endif()
+endfunction()
+
+# Make sure SDL3_image::SDL3_image always exists
+if(NOT TARGET SDL3_image::SDL3_image)
+    if(TARGET SDL3_image::SDL3_image-shared)
+        _sdl_create_target_alias_compat(SDL3_image::SDL3_image SDL3_image::SDL3_image-shared)
+    endif()
+endif()
+
+check_required_components(SDL3_image)
