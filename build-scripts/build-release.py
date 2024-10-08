@@ -508,9 +508,9 @@ class Releaser:
         assert xcode_project.is_dir(), f"{xcode_project} must be a directory"
         assert (xcode_project / "project.pbxproj").is_file, f"{xcode_project} must contain project.pbxproj"
         dmg_in.unlink(missing_ok=True)
-        build_xcconfig = self.release_info["dmg"].get("build-xcconfig")
-        if build_xcconfig:
-            shutil.copy(self.root / build_xcconfig, xcode_project.parent / "build.xcconfig")
+        # build_xcconfig = self.release_info["dmg"].get("build-xcconfig")
+        # if build_xcconfig:
+        #     shutil.copy(self.root / build_xcconfig, xcode_project.parent / "build.xcconfig")
 
         xcode_scheme = self.release_info["dmg"].get("scheme")
         xcode_target = self.release_info["dmg"].get("target")
