@@ -79,52 +79,10 @@
     }
   },
   "msvc": {
-    "msbuild": {
-      "archs": [
-        "x86",
-        "x64"
-      ],
-      "projects": [
-        "VisualC/SDL_image.vcxproj"
-      ],
-      "prebuilt": [
-        "VisualC/external/optional/@<@ARCH@>@/*"
-      ],
-      "files-lib": {
-        "": [
-          "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL3_image.dll"
-        ],
-        "optional": [
-          "VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
-          "VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
-          "VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
-          "VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.avif.txt",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.dav1d.txt",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.tiff.txt",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.webp.txt"
-        ]
-      },
-      "files-devel": {
-        "lib/@<@ARCH@>@": [
-          "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL3_image.dll",
-          "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL3_image.lib",
-          "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL3_image.pdb"
-        ],
-        "lib/@<@ARCH@>@/optional": [
-          "VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
-          "VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
-          "VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
-          "VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.avif.txt",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.dav1d.txt",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.tiff.txt",
-          "VisualC/external/optional/@<@ARCH@>@/LICENSE.webp.txt"
-        ]
-      }
-    },
     "cmake": {
       "archs": [
+        "x86",
+        "x64",
         "arm64"
       ],
       "args": [

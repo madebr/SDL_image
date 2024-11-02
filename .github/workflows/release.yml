@@ -328,6 +328,8 @@ jobs:
         with:
           ref: ${{ inputs.commit }}
           sparse-checkout: 'build-scripts/build-release.py'
+      - name: Set up NASM
+        uses: ilammy/setup-nasm@v1
       - name: 'Download source archives'
         uses: actions/download-artifact@v4
         with:
